@@ -1,4 +1,5 @@
 #pragma once
+#define ASSERT(Expression) if (!(Expression)) { *(int*)0 = 0; }
 #define GAME_NAME "CGAME"
 #define GAME_RES_WIDTH 384
 #define GAME_RES_HEIGHT 240
@@ -23,6 +24,16 @@
 #define FACING_UP_0    9
 #define FACING_UP_1    10
 #define FACING_UP_2    11
+
+typedef enum DIRECTION { Down = FACING_DOWN_0,
+						 Left = FACING_LEFT_0,
+						 Right = FACING_RIGHT_0,
+						 Up = FACING_UP_0 } DIRECTION;
+
+typedef enum LOGLEVEL { None, Error, Warning, Informational, Debug } LOGLEVEL;
+
+#define FONT_SHEET_ROW_SIZE 98
+#define LOG_FILE_NAME GAME_NAME ".log"
 
 LRESULT CALLBACK MainWindowProc(_In_ HWND WindowsHandle, _In_ UINT Message, _In_ WPARAM WParam, _In_ LPARAM LParam);
 DWORD CreateMainGameWindow(void);
@@ -85,12 +96,28 @@ typedef struct PLAYER
 {
 	char Name[12];
 	GAMEBITMAP Sprite[3][12];
-	int32_t ScreenPosX;
-	int32_t ScreenPosY;
+	int16_t ScreenPosX;
+	int16_t ScreenPosY;
+
+	uint8_t MovementRemaining;
+	uint8_t Direction;
+	uint8_t CurrentArmour;
+	uint8_t SpriteIndex;
 } PLAYER;
+
+typedef struct REGISTRYPARAMS
+{
+	DWORD LogLevel;
+} REGISTRYPARAMS;
 
 DWORD InitializeHero(void);
 DWORD Load32BppBitmapFromFile(_In_ char* FileName, _Inout_ GAMEBITMAP* GameBitmap);
+void Blit32BppBitmapToBuffer(_In_ GAMEBITMAP* GameBitmap, _In_ uint16_t x, _In_ uint16_t y);
+void BlitStringToBuffer(_In_ char* String, _In_ GAMEBITMAP* FontSheet, _In_ PIXEL32* Colour, _In_ uint16_t x, _In_ uint16_t y);
+
+DWORD LoadRegistryParameters(void);
+void LogMessageA(_In_ DWORD LogLevel, _In_ char* Message, _In_ ...);
+void DrawDebugInfo(void);
 
 #ifdef SIMD
 void ClearScreen(_In_ __m128i* Colour);
