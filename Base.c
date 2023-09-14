@@ -35,12 +35,32 @@ uint8_t gSFXSourceVoiceSelector;
 float gSFXVolume = 0.5f;
 float gMusicVolume = 0.5f;
 
-GAMESOUND gMenuNavigate;
-GAMESOUND gMenuChoose;
+GAMESOUND gSoundMenuNavigate;
+GAMESOUND gSoundMenuChoose;
+GAMESOUND gSoundSplashScreen;
 
-GAMESTATE gCurrentGameState = GS_TITLE;
+GAMESTATE gCurrentGameState = GS_SPLASH;
 GAMESTATE gPreviousGameState;
 GAMESTATE gDesiredGameState;
+
+int32_t gFontCharacterPixelOffset[] = {
+    //  .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. ..
+        93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,
+    //     !  "  #  $  %  &  '  (  )  *  +  ,  -  .  /  0  1  2  3  4  5  6  7  8  9  :  ;  <  =  >  ?
+        94,64,87,66,67,68,70,85,72,73,71,77,88,74,91,92,52,53,54,55,56,57,58,59,60,61,86,84,89,75,90,93,
+    //  @  A  B  C  D  E  F  G  H  I  J  K  L  M  N  O  P  Q  R  S  T  U  V  W  X  Y  Z  [  \  ]  ^  _
+        65,0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,80,78,81,69,76,
+    //  `  a  b  c  d  e  f  g  h  i  j  k  l  m  n  o  p  q  r  s  t  u  v  w  x  y  z  {  |  }  ~  ..
+        62,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,82,79,83,63,93,
+    //  .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. ..
+        93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,
+    //  .. .. .. .. .. .. .. .. .. .. .. bb .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. ab .. .. .. ..
+        93,93,93,93,93,93,93,93,93,93,93,96,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,95,93,93,93,93,
+    //  .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. ..
+        93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,
+    //  .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. .. F2 .. .. .. .. .. .. .. .. .. .. .. .. ..
+        93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,93,97,93,93,93,93,93,93,93,93,93,93,93,93,93
+};
 
 int WinMain(_In_ HINSTANCE Inst, _In_opt_ HINSTANCE InstPrev, _In_ PSTR CmdLine, _In_ int CmdShow)
 {
@@ -144,13 +164,19 @@ int WinMain(_In_ HINSTANCE Inst, _In_opt_ HINSTANCE InstPrev, _In_ PSTR CmdLine,
         goto Return;
     }
 
-    if (LoadWavFromFile(".\\Assets\\MenuNavigate.wav", &gMenuNavigate) != ERROR_SUCCESS)
+    if (LoadWavFromFile(".\\Assets\\MenuNavigate.wav", &gSoundMenuNavigate) != ERROR_SUCCESS)
     {
         LogMessageA(NULL, "[%s] LoadWavFromFile failed!", __FUNCTION__);
         goto Return;
     }
 
-    if (LoadWavFromFile(".\\Assets\\MenuChoose.wav", &gMenuChoose) != ERROR_SUCCESS)
+    if (LoadWavFromFile(".\\Assets\\MenuChoose.wav", &gSoundMenuChoose) != ERROR_SUCCESS)
+    {
+        LogMessageA(NULL, "[%s] LoadWavFromFile failed!", __FUNCTION__);
+        goto Return;
+    }
+
+    if (LoadWavFromFile(".\\Assets\\SplashScreen.wav", &gSoundSplashScreen) != ERROR_SUCCESS)
     {
         LogMessageA(NULL, "[%s] LoadWavFromFile failed!", __FUNCTION__);
         goto Return;
@@ -762,312 +788,11 @@ void BlitStringToBuffer(_In_ char* String, _In_ GAMEBITMAP* FontSheet, _In_ PIXE
 
     for (int ch = 0; ch < stringLength; ch++)
     {
-        int widthOffset = 0;
-        switch (String[ch])
-        {
-        case 'A':
-            widthOffset = 0;
-            break;
-        case 'B':
-            widthOffset = charWidth;
-            break;
-        case 'C':
-            widthOffset = charWidth * 2;
-            break;
-        case 'D':
-            widthOffset = charWidth * 3;
-            break;
-        case 'E':
-            widthOffset = charWidth * 4;
-            break;
-        case 'F':
-            widthOffset = charWidth * 5;
-            break;
-        case 'G':
-            widthOffset = charWidth * 6;
-            break;
-        case 'H':
-            widthOffset = charWidth * 7;
-            break;
-        case 'I':
-            widthOffset = charWidth * 8;
-            break;
-        case 'J':
-            widthOffset = charWidth * 9;
-            break;
-        case 'K':
-            widthOffset = charWidth * 10;
-            break;
-        case 'L':
-            widthOffset = charWidth * 11;
-            break;
-        case 'M':
-            widthOffset = charWidth * 12;
-            break;
-        case 'N':
-            widthOffset = charWidth * 13;
-            break;
-        case 'O':
-            widthOffset = charWidth * 14;
-            break;
-        case 'P':
-            widthOffset = charWidth * 15;
-            break;
-        case 'Q':
-            widthOffset = charWidth * 16;
-            break;
-        case 'R':
-            widthOffset = charWidth * 17;
-            break;
-        case 'S':
-            widthOffset = charWidth * 18;
-            break;
-        case 'T':
-            widthOffset = charWidth * 19;
-            break;
-        case 'U':
-            widthOffset = charWidth * 20;
-            break;
-        case 'V':
-            widthOffset = charWidth * 21;
-            break;
-        case 'W':
-            widthOffset = charWidth * 22;
-            break;
-        case 'X':
-            widthOffset = charWidth * 23;
-            break;
-        case 'Y':
-            widthOffset = charWidth * 24;
-            break;
-        case 'Z':
-            widthOffset = charWidth * 25;
-            break;
-        case 'a':
-            widthOffset = charWidth * 26;
-            break;
-        case 'b':
-            widthOffset = charWidth * 27;
-            break;
-        case 'c':
-            widthOffset = charWidth * 28;
-            break;
-        case 'd':
-            widthOffset = charWidth * 29;
-            break;
-        case 'e':
-            widthOffset = charWidth * 30;
-            break;
-        case 'f':
-            widthOffset = charWidth * 31;
-            break;
-        case 'g':
-            widthOffset = charWidth * 32;
-            break;
-        case 'h':
-            widthOffset = charWidth * 33;
-            break;
-        case 'i':
-            widthOffset = charWidth * 34;
-            break;
-        case 'j':
-            widthOffset = charWidth * 35;
-            break;
-        case 'k':
-            widthOffset = charWidth * 36;
-            break;
-        case 'l':
-            widthOffset = charWidth * 37;
-            break;
-        case 'm':
-            widthOffset = charWidth * 38;
-            break;
-        case 'n':
-            widthOffset = charWidth * 39;
-            break;
-        case 'o':
-            widthOffset = charWidth * 40;
-            break;
-        case 'p':
-            widthOffset = charWidth * 41;
-            break;
-        case 'q':
-            widthOffset = charWidth * 42;
-            break;
-        case 'r':
-            widthOffset = charWidth * 43;
-            break;
-        case 's':
-            widthOffset = charWidth * 44;
-            break;
-        case 't':
-            widthOffset = charWidth * 45;
-            break;
-        case 'u':
-            widthOffset = charWidth * 46;
-            break;
-        case 'v':
-            widthOffset = charWidth * 47;
-            break;
-        case 'w':
-            widthOffset = charWidth * 48;
-            break;
-        case 'x':
-            widthOffset = charWidth * 49;
-            break;
-        case 'y':
-            widthOffset = charWidth * 50;
-            break;
-        case 'z':
-            widthOffset = charWidth * 51;
-            break;
-        case '0':
-            widthOffset = charWidth * 52;
-            break;
-        case '1':
-            widthOffset = charWidth * 53;
-            break;
-        case '2':
-            widthOffset = charWidth * 54;
-            break;
-        case '3':
-            widthOffset = charWidth * 55;
-            break;
-        case '4':
-            widthOffset = charWidth * 56;
-            break;
-        case '5':
-            widthOffset = charWidth * 57;
-            break;
-        case '6':
-            widthOffset = charWidth * 58;
-            break;
-        case '7':
-            widthOffset = charWidth * 59;
-            break;
-        case '8':
-            widthOffset = charWidth * 60;
-            break;
-        case '9':
-            widthOffset = charWidth * 61;
-            break;
-        case '`':
-            widthOffset = charWidth * 62;
-            break;
-        case '~':
-            widthOffset = charWidth * 63;
-            break;
-        case '!':
-            widthOffset = charWidth * 64;
-            break;
-        case '@':
-            widthOffset = charWidth * 65;
-            break;
-        case '#':
-            widthOffset = charWidth * 66;
-            break;
-        case '$':
-            widthOffset = charWidth * 67;
-            break;
-        case '%':
-            widthOffset = charWidth * 68;
-            break;
-        case '^':
-            widthOffset = charWidth * 69;
-            break;
-        case '&':
-            widthOffset = charWidth * 70;
-            break;
-        case '*':
-            widthOffset = charWidth * 71;
-            break;
-        case '(':
-            widthOffset = charWidth * 72;
-            break;
-        case ')':
-            widthOffset = charWidth * 73;
-            break;
-        case '-':
-            widthOffset = charWidth * 74;
-            break;
-        case '=':
-            widthOffset = charWidth * 75;
-            break;
-        case '_':
-            widthOffset = charWidth * 76;
-            break;
-        case '+':
-            widthOffset = charWidth * 77;
-            break;
-        case '\\':
-            widthOffset = charWidth * 78;
-            break;
-        case '|':
-            widthOffset = charWidth * 79;
-            break;
-        case '[':
-            widthOffset = charWidth * 80;
-            break;
-        case ']':
-            widthOffset = charWidth * 81;
-            break;
-        case '{':
-            widthOffset = charWidth * 82;
-            break;
-        case '}':
-            widthOffset = charWidth * 83;
-            break;
-        case ';':
-            widthOffset = charWidth * 84;
-            break;
-        case '\'':
-            widthOffset = charWidth * 85;
-            break;
-        case ':':
-            widthOffset = charWidth * 86;
-            break;
-        case '"':
-            widthOffset = charWidth * 87;
-            break;
-        case ',':
-            widthOffset = charWidth * 88;
-            break;
-        case '<':
-            widthOffset = charWidth * 89;
-            break;
-        case '>':
-            widthOffset = charWidth * 90;
-            break;
-        case '.':
-            widthOffset = charWidth * 91;
-            break;
-        case '/':
-            widthOffset = charWidth * 92;
-            break;
-        case '?':
-            widthOffset = charWidth * 93;
-            break;
-        case ' ':
-            widthOffset = charWidth * 94;
-            break;
-        case '»':
-            widthOffset = charWidth * 95;
-            break;
-        case '«':
-            widthOffset = charWidth * 96;
-            break;
-        case '\xf2':
-            widthOffset = charWidth * 97;
-            break;
-        default:
-            widthOffset = charWidth * 98;
-            break;
-        }
-
         int fontSheetOffset = 0;
         int stringBitmapOffset = 0;
         PIXEL32 fontSheetPixel = { 0 };
-        int startingFontSheetPixel = (FontSheet->BitmapInfo.bmiHeader.biWidth * FontSheet->BitmapInfo.bmiHeader.biHeight) - FontSheet->BitmapInfo.bmiHeader.biWidth + widthOffset;
+        int startingFontSheetPixel = (FontSheet->BitmapInfo.bmiHeader.biWidth * FontSheet->BitmapInfo.bmiHeader.biHeight) -
+                                      FontSheet->BitmapInfo.bmiHeader.biWidth + (charWidth * gFontCharacterPixelOffset[(uint8_t)String[ch]]);
 
         for (int yPixel = 0; yPixel < charHeight; yPixel++)
         {
@@ -1135,6 +860,78 @@ DWORD LoadRegistryParameters(void)
     }
 
     LogMessageA(LL_INFORMATIONAL, "[%s] LogLevel is %d.", __FUNCTION__, gRegistryParams.LogLevel);
+
+    if (result != ERROR_SUCCESS)
+    {
+        if (result == ERROR_FILE_NOT_FOUND)
+        {
+            result = LL_INFORMATIONAL;
+            LogMessageA(LL_INFORMATIONAL, "[%s] Registry 'WindowWidth' not found; using default of 0." __FUNCTION__);
+            gRegistryParams.WindowWidth = 0;
+        }
+        else
+        {
+            LogMessageA(LL_ERROR, "[%s] Failed to read the 'WindowWidth' registry value! Error 0x%08lx!" __FUNCTION__, result);
+            goto Return;
+        }
+    }
+
+    LogMessageA(LL_INFORMATIONAL, "[%s] WindowWidth is %d.", __FUNCTION__, (BYTE*)gRegistryParams.WindowWidth);
+
+    if (result != ERROR_SUCCESS)
+    {
+        if (result == ERROR_FILE_NOT_FOUND)
+        {
+            result = LL_INFORMATIONAL;
+            LogMessageA(LL_INFORMATIONAL, "[%s] Registry 'WindowHeight' not found; using default of 0." __FUNCTION__);
+            gRegistryParams.WindowHeight = 0;
+        }
+        else
+        {
+            LogMessageA(LL_ERROR, "[%s] Failed to read the 'WindowHeight' registry value! Error 0x%08lx!" __FUNCTION__, result);
+            goto Return;
+        }
+    }
+
+    LogMessageA(LL_INFORMATIONAL, "[%s] WindowHeight is %d.", __FUNCTION__, (BYTE*)gRegistryParams.WindowHeight);
+
+    result = RegGetValueA(regKey, NULL, "SFXVolume", RRF_RT_DWORD, NULL, (BYTE*)&gRegistryParams.SFXVolume, &regBytesRead);
+    if (result != ERROR_SUCCESS)
+    {
+        if (result == ERROR_FILE_NOT_FOUND)
+        {
+            result = LL_INFORMATIONAL;
+            LogMessageA(LL_INFORMATIONAL, "[%s] Registry 'SFXVolume' not found; using default of 50." __FUNCTION__);
+            gRegistryParams.SFXVolume = 50;
+        }
+        else
+        {
+            LogMessageA(LL_ERROR, "[%s] Failed to read the 'SFXVolume' registry value! Error 0x%08lx!" __FUNCTION__, result);
+            goto Return;
+        }
+    }
+
+    LogMessageA(LL_INFORMATIONAL, "[%s] SFXVolume is %.1f.", __FUNCTION__, (float)(gRegistryParams.SFXVolume / 100.0f));
+    gSFXVolume = (float)(gRegistryParams.SFXVolume / 100.0f);
+
+    result = RegGetValueA(regKey, NULL, "MusicVolume", RRF_RT_DWORD, NULL, (BYTE*)&gRegistryParams.MusicVolume, &regBytesRead);
+    if (result != ERROR_SUCCESS)
+    {
+        if (result == ERROR_FILE_NOT_FOUND)
+        {
+            result = LL_INFORMATIONAL;
+            LogMessageA(LL_INFORMATIONAL, "[%s] Registry 'MusicVolume' not found; using default of 50." __FUNCTION__);
+            gRegistryParams.SFXVolume = 50;
+        }
+        else
+        {
+            LogMessageA(LL_ERROR, "[%s] Failed to read the 'MusicVolume' registry value! Error 0x%08lx!" __FUNCTION__, result);
+            goto Return;
+        }
+    }
+
+    LogMessageA(LL_INFORMATIONAL, "[%s] MusicVolume is %.1f.", __FUNCTION__, (float)(gRegistryParams.MusicVolume / 100.0f));
+    gMusicVolume = (float)(gRegistryParams.MusicVolume / 100.0f);
 
 Return:
     if (regKey)
@@ -1566,13 +1363,79 @@ void MenuItem_Options_WindowSize(void)
 
 void MenuItem_Options_Back(void)
 {
+    gRegistryParams.SFXVolume = gSFXVolume;
+    gRegistryParams.MusicVolume = gMusicVolume;
+
     gCurrentGameState = gPreviousGameState;
     gPreviousGameState = GS_OPTIONS;
 }
 
 void DrawSplashScreen(void)
 {
+    static uint64_t localFrameCounter;
+    static uint64_t lastFrameSeen;
+    static uint8_t brightnessModifier = 0;
+    PIXEL32 textColour = { 0xFF, 0xFF, 0xFF, 0xFF };
 
+    if (gPerformanceData.TotalFramesRendered > (lastFrameSeen + 1))
+    {
+        localFrameCounter = 0;
+    }
+
+    if (localFrameCounter >= 120)
+    {
+        if (localFrameCounter == 120)
+        {
+            PlayGameSound(&gSoundSplashScreen);
+        }
+
+        if (localFrameCounter == 180)
+        {
+            brightnessModifier = 64;
+        }
+        else if (localFrameCounter == 185)
+        {
+            brightnessModifier = 96;
+        }
+        else if (localFrameCounter == 190)
+        {
+            brightnessModifier = 128;
+        }
+        else if (localFrameCounter == 195)
+        {
+            brightnessModifier = 164;
+        }
+        else if (localFrameCounter == 200)
+        {
+            brightnessModifier = 192;
+        }
+        else if (localFrameCounter == 205)
+        {
+            brightnessModifier = 255;
+        }
+        else if (localFrameCounter == 260)
+        {
+            gPreviousGameState = gCurrentGameState;
+            gCurrentGameState = GS_TITLE;
+        }
+
+        textColour.Red -= brightnessModifier;
+        textColour.Green -= brightnessModifier;
+        textColour.Blue -= brightnessModifier;
+
+        BlitStringToBuffer("- SOME GUY -", &g6x7Font,
+                           &textColour,
+                           (GAME_RES_WIDTH / 2) - ((uint16_t)(12 * 6) / 2),
+                           (GAME_RES_HEIGHT / 2) - 10);
+
+        BlitStringToBuffer("presents", &g6x7Font,
+                           &textColour,
+                           (GAME_RES_WIDTH / 2) - ((uint16_t)(8 * 6) / 2),
+                           (GAME_RES_HEIGHT / 2));
+    }
+
+    localFrameCounter++;
+    lastFrameSeen = gPerformanceData.TotalFramesRendered;
 }
 
 void DrawTitleScreen(void)
@@ -1613,6 +1476,7 @@ void DrawOptionsScreen(void)
 
     if (gPerformanceData.TotalFramesRendered > (lastFrameSeen + 1))
     {
+        localFrameCounter = 0;
         gMenu_OptionsScreen.SelectedItem = 0;
     }
 
@@ -1689,7 +1553,11 @@ void DrawUnpluggedScreen(void)
 
 void SplashInput(void)
 {
-
+    if (gGameInput.EscapeKeyIsDown && !gGameInput.EscapeKeyWasDown)
+    {
+        gPreviousGameState = gCurrentGameState;
+        gCurrentGameState = GS_TITLE;
+    }
 }
 
 void TitleInput(void)
@@ -1699,7 +1567,7 @@ void TitleInput(void)
         if (gMenu_TitleScreen.SelectedItem < gMenu_TitleScreen.ItemCount - 1)
         {
             gMenu_TitleScreen.SelectedItem++;
-            PlayGameSound(&gMenuNavigate);
+            PlayGameSound(&gSoundMenuNavigate);
         }
     }
     if (gGameInput.UpKeyIsDown && !gGameInput.UpKeyWasDown)
@@ -1708,13 +1576,13 @@ void TitleInput(void)
         if (gMenu_TitleScreen.SelectedItem > startingPos)
         {
             gMenu_TitleScreen.SelectedItem--;
-            PlayGameSound(&gMenuNavigate);
+            PlayGameSound(&gSoundMenuNavigate);
         }
     }
     if (gGameInput.ChooseKeyIsDown && !gGameInput.ChooseKeyWasDown)
     {
         gMenu_TitleScreen.Items[gMenu_TitleScreen.SelectedItem]->Action();
-        PlayGameSound(&gMenuChoose);
+        PlayGameSound(&gSoundMenuChoose);
     };
 }
 
@@ -1804,7 +1672,7 @@ void OptionsInput(void)
         if (gMenu_OptionsScreen.SelectedItem < gMenu_OptionsScreen.ItemCount - 1)
         {
             gMenu_OptionsScreen.SelectedItem++;
-            PlayGameSound(&gMenuNavigate);
+            PlayGameSound(&gSoundMenuNavigate);
         }
     }
     if (gGameInput.UpKeyIsDown && !gGameInput.UpKeyWasDown)
@@ -1812,21 +1680,21 @@ void OptionsInput(void)
         if (gMenu_OptionsScreen.SelectedItem > 0)
         {
             gMenu_OptionsScreen.SelectedItem--;
-            PlayGameSound(&gMenuNavigate);
+            PlayGameSound(&gSoundMenuNavigate);
         }
     }
     if (gGameInput.ChooseKeyIsDown && !gGameInput.ChooseKeyWasDown)
     {
         gMenu_OptionsScreen.Items[gMenu_OptionsScreen.SelectedItem]->Action();
-        PlayGameSound(&gMenuChoose);
+        PlayGameSound(&gSoundMenuChoose);
     };
 
     // Sound control
     if (gGameInput.LeftKeyIsDown && !gGameInput.LeftKeyWasDown || gGameInput.RightKeyIsDown && !gGameInput.RightKeyWasDown &&
-        gMenu_OptionsScreen.Items[gMenu_OptionsScreen.SelectedItem]->Name != "Back:") // Other options can be toggled with left/right, not this one though
+        gMenu_OptionsScreen.Items[gMenu_OptionsScreen.SelectedItem]->Name != (char*)"Back:") // Other options can be toggled with left/right, not this one though
     {
         gMenu_OptionsScreen.Items[gMenu_OptionsScreen.SelectedItem]->Action();
-        PlayGameSound(&gMenuChoose);
+        PlayGameSound(&gSoundMenuChoose);
     }
 }
 
@@ -1837,7 +1705,7 @@ void QuitInput(void)
         if (gMenu_QuitScreen.SelectedItem > 0)
         {
             gMenu_QuitScreen.SelectedItem--;
-            PlayGameSound(&gMenuNavigate);
+            PlayGameSound(&gSoundMenuNavigate);
         }
     }
     if (gGameInput.RightKeyIsDown && !gGameInput.RightKeyWasDown)
@@ -1845,13 +1713,13 @@ void QuitInput(void)
         if (gMenu_QuitScreen.SelectedItem < gMenu_QuitScreen.ItemCount - 1)
         {
             gMenu_QuitScreen.SelectedItem++;
-            PlayGameSound(&gMenuNavigate);
+            PlayGameSound(&gSoundMenuNavigate);
         }
     }
     if (gGameInput.ChooseKeyIsDown && !gGameInput.ChooseKeyWasDown)
     {
         gMenu_QuitScreen.Items[gMenu_QuitScreen.SelectedItem]->Action();
-        PlayGameSound(&gMenuChoose);
+        PlayGameSound(&gSoundMenuChoose);
     };
 }
 
